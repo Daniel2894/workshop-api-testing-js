@@ -54,6 +54,7 @@ describe('First Api Tests', () => {
         const body = {
             city: 'Miami'
         };
+        
         return agent.patch('https://httpbin.org/patch')
             .send(body).then((response) => {
                 expect(response.status).to.equal(statusCode.OK);
@@ -69,23 +70,23 @@ describe('First Api Tests', () => {
         };
 
         return agent.put('https://httpbin.org/put')
-        .send(body).then((response) => {
-            expect(response.status).to.equal(statusCode.OK);
-            expect(response.body.json).to.eql(body);
-        });
-    });
-        
-        it('Consume DELETE Service', () => {
-            const body = {
-                name: 'John',
-                age: 31,
-                city: 'New York'
-            };
-            return agent.del('https://httpbin.org/delete')
             .send(body).then((response) => {
                 expect(response.status).to.equal(statusCode.OK);
                 expect(response.body.json).to.eql(body);
-            });
         });
+    });
+        
+    it('Consume DELETE Service', () => {
+        const body = {
+            name: 'John',
+            age: 31,
+            city: 'New York'
+        };
 
+        return agent.del('https://httpbin.org/delete')
+            .send(body).then((response) => {
+                expect(response.status).to.equal(statusCode.OK);
+                expect(response.body.json).to.eql(body);
+        });
+    });
 });
