@@ -24,6 +24,18 @@ describe('Github API test', () => {
           expect(response.body.company).to.equal('PSL');
           expect(response.body.location).to.equal('Colombia');
         }));
+
+    it('Should return the repository name, privacy and description', () =>
+      agent.get(`${urlBase}/users/${githubUserName}/repos`)
+        .auth('token', process.env.ACCESS_TOKEN)
+        .then((response) => {
+          const repository = response.body.find(repo => repo.name === 'jasmine-awesome-report');
+
+          expect(response.status).to.equal(statusCode.OK);
+          expect(repository.full_name).to.equal(`${githubUserName}/jasmine-awesome-report`);
+          expect(repository.private).to.equal(false);
+          expect(repository.description).to.equal('An awesome html report for Jasmine');
+        }));
   });
 
   describe('test the repositories', () => {
