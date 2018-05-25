@@ -1,6 +1,10 @@
 const agent = require('superagent-promise')(require('superagent'), Promise);
 const statusCode = require('http-status-codes');
 const { expect } = require('chai');
+const chai = require('chai');
+const chaiSubset = require('chai-subset');
+
+chai.use(chaiSubset);
 const md5 = require('md5');
 
 
@@ -83,6 +87,10 @@ describe('Github API test', () => {
       it('Should have README.md', () => {
         expect(readme.name).to.equal(filename);
         expect(readme.sha).to.equal(expectedSha);
+        expect(readme.path).to.equal(filename);
+        expect(readme).to.containSubset({
+          type: 'file'
+        });
       });
 
       describe('test the download of files in the repo', () => {
