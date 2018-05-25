@@ -88,6 +88,10 @@ describe('Github API test', () => {
       it('Should have README.md', () => {
         expect(readme.name).to.equal(filename);
         expect(readme.sha).to.equal(expectedSha);
+        expect(readme.path).to.equal(filename);
+        expect(readme).to.containSubset({
+          type: 'file'
+        });
       });
 
       describe('test the download of files in the repo', () => {
