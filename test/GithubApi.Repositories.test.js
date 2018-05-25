@@ -1,6 +1,7 @@
 const agent = require('superagent-promise')(require('superagent'), Promise);
 const statusCode = require('http-status-codes');
 const { expect } = require('chai');
+const md5 = require('md5');
 
 
 const urlBase = 'https://api.github.com';
@@ -19,11 +20,13 @@ describe('Github API test', () => {
           expect(response.body.company).to.equal('PSL');
           expect(response.body.location).to.equal('Colombia');
         }));
+  });
 
-    describe('get repositories data', () => {
-      let repositories;
-      let repository;
+  describe('test the repositories', () => {
+    let repositories;
+    let repository;
 
+    describe('get the repositories data', () => {
       before(() => {
         const query = agent.get(`${urlBase}/users/${githubUserName}/repos`)
           .auth('token', process.env.ACCESS_TOKEN)
@@ -34,11 +37,30 @@ describe('Github API test', () => {
         return query;
       });
 
-
       it('Should return the repository name, privacy and description', () => {
         expect(repository.full_name).to.equal(`${githubUserName}/jasmine-awesome-report`);
         expect(repository.private).to.equal(false);
         expect(repository.description).to.equal('An awesome html report for Jasmine');
+      });
+    });
+
+
+    describe('get a repository', () => {
+      const expectedMD5 = '1ed0130a7216203cc3e5b79b9c434aa8';
+      let zip;
+
+      before(() => {
+        const query = agent.get(`${repository.svn_url}/archive/${repository.default_branch}.zip`)
+          .auth('token', process.env.ACCESS_TOKEN)
+          .buffer(true)
+          .then((response) => {
+            zip = response.text;
+          });
+        return query;
+      });
+
+      it('Should download the .zip repository', () => {
+        expect(md5(zip)).to.equal(expectedMD5);
       });
     });
   });
