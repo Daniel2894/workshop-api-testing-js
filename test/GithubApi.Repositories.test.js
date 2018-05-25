@@ -64,7 +64,7 @@ describe('Github API test', () => {
       });
     });
 
-    describe('get the list of files in the repo', () => {
+    describe('test the files in the repo', () => {
       const filename = 'README.md';
       let readme;
       let files;
@@ -83,6 +83,24 @@ describe('Github API test', () => {
       it('Should have README.md', () => {
         expect(readme.name).to.equal(filename);
         expect(readme.sha).to.equal(expectedSha);
+      });
+
+      describe('test the download of files in the repo', () => {
+        const expectedMD5 = '8a406064ca4738447ec522e639f828bf';
+        let file;
+
+        before(() => {
+          const query = agent.get(readme.download_url)
+            .auth('token', process.env.ACCESS_TOKEN)
+            .then((response) => {
+              file = response.text;
+            });
+          return query;
+        });
+
+        it('should download the README file', () => {
+          expect(md5(file)).to.equal(expectedMD5);
+        });
       });
     });
   });
