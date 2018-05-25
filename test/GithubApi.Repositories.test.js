@@ -63,5 +63,27 @@ describe('Github API test', () => {
         expect(md5(zip)).to.equal(expectedMD5);
       });
     });
+
+    describe('get the list of files in the repo', () => {
+      const filename = 'README.md';
+      let readme;
+      let files;
+      const expectedSha = '9bcf2527fd5cd12ce18e457581319a349f9a56f3';
+
+      before(() => {
+        const query = agent.get(`${repository.url}/contents`)
+          .auth('token', process.env.ACCESS_TOKEN)
+          .then((response) => {
+            files = response.body;
+            readme = files.find(file => file.name === 'README.md');
+          });
+        return query;
+      });
+
+      it('Should have README.md', () => {
+        expect(readme.name).to.equal(filename);
+        expect(readme.sha).to.equal(expectedSha);
+      });
+    });
   });
 });
