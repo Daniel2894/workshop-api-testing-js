@@ -133,6 +133,24 @@ describe('Github API test', () => {
           expect(md5(file)).to.equal(expectedMD5);
         });
       });
+
+      describe('test the download of files in the repo', () => {
+        const expectedMD5 = '8a406064ca4738447ec522e639f828bf';
+        let file;
+
+        before(() => {
+          const query = agent.get(readme.download_url)
+            .auth('token', process.env.ACCESS_TOKEN)
+            .then((response) => {
+              file = response.text;
+            });
+          return query;
+        });
+
+        it('should download the README file', () => {
+          expect(md5(file)).to.equal(expectedMD5);
+        });
+      });
     });
   });
 });
