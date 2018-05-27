@@ -31,4 +31,14 @@ describe('Github API test PUT method', () => {
       followQuery.then(user => assert.exists(user));
     });
   });
+
+  describe('follow the user again', () => {
+    it('The method is idempotent', () => {
+      agent.put(`${urlBase}/user/following/${githubUserName}`)
+        .then((response) => {
+          expect(response.status).to.equal(statusCode.NO_CONTENT);
+          expect(response.body).to.be.empty();
+        });
+    });
+  });
 });
