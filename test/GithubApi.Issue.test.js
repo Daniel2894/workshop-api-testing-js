@@ -1,5 +1,4 @@
 const agent = require('superagent-promise')(require('superagent'), Promise);
-
 const { expect } = require('chai');
 
 const urlBase = 'https://api.github.com';
@@ -41,6 +40,28 @@ describe('Github API test post and patch method', () => {
 
     it('Should exist the repository workshop-api-testing-js', () => {
       expect(repository).to.not.equal(undefined);
+    });
+
+    describe('insert an issue', () => {
+      const body = {
+        title: 'testing post method'
+      };
+      let issue;
+
+
+      before(() => {
+        const newIssueQuery = agent.post(`${urlBase}/repos/${username}/${repository.name}/issues`, body)
+          .auth('token', process.env.ACCESS_TOKEN)
+          .then((response) => {
+            issue = response.body;
+          });
+        return newIssueQuery;
+      });
+
+      it('Should create the issue', () => {
+        expect(issue.title).to.equal(body.title);
+        expect(issue.body).to.equal(null);
+      });
     });
   });
 });
