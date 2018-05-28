@@ -43,14 +43,17 @@ describe('Github API test post and patch method', () => {
     });
 
     describe('insert an issue', () => {
-      const body = {
+      const firstIssue = {
         title: 'testing post method'
+      };
+      const editedIssue = {
+        body: 'adding a body to an issue'
       };
       let issue;
 
 
       before(() => {
-        const newIssueQuery = agent.post(`${urlBase}/repos/${username}/${repository.name}/issues`, body)
+        const newIssueQuery = agent.post(`${urlBase}/repos/${username}/${repository.name}/issues`, firstIssue)
           .auth('token', process.env.ACCESS_TOKEN)
           .then((response) => {
             issue = response.body;
@@ -59,8 +62,26 @@ describe('Github API test post and patch method', () => {
       });
 
       it('Should create the issue', () => {
-        expect(issue.title).to.equal(body.title);
+        expect(issue.title).to.equal(firstIssue.title);
         expect(issue.body).to.equal(null);
+      });
+
+      describe('Issue modified', () => {
+        let modifiedIssue;
+
+        before(() => {
+          const modifiedQuery = agent.patch(`${urlBase}/repos/${username}/${repository.name}/issues/${issue.number}`, editedIssue)
+            .auth('token', process.env.ACCESS_TOKEN)
+            .then((response) => {
+              modifiedIssue = response.body;
+            });
+          return modifiedQuery;
+        });
+
+        it('Should add a body to the issue', () => {
+          expect(modifiedIssue.title).to.equal(issue.title);
+          expect(modifiedIssue.body).to.equal(editedIssue.body);
+        });
       });
     });
   });
