@@ -36,7 +36,7 @@ describe('Testing the Delete methods in the Github API', () => {
 
     before(() => {
       newGistQuery = agent.post(`${urlBase}/gists`, createGist)
-        .auth(process.env.GITHUB_USERNAME, process.env.GITHUB_PASSWORD)
+        .auth('token', process.env.ACCESS_TOKEN)
         .then((response) => {
           code = response.status;
           gist = response.body;
