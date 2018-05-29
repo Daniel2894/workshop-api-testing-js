@@ -8,7 +8,6 @@ chai.use(chaiSubset);
 const md5 = require('md5');
 
 
-
 const urlBase = 'https://api.github.com';
 
 
@@ -25,28 +24,6 @@ describe('Github API test', () => {
           expect(response.body.company).to.equal('PSL');
           expect(response.body.location).to.equal('Colombia');
         }));
-
-    describe('get repositories data', () => {
-      let repositories;
-      let repository;
-
-      before(() => {
-        const query = agent.get(`${urlBase}/users/${githubUserName}/repos`)
-          .auth('token', process.env.ACCESS_TOKEN)
-          .then((response) => {
-            repositories = response.body;
-            repository = repositories.find(repo => repo.name === 'jasmine-awesome-report');
-          });
-        return query;
-      });
-
-
-      it('Should return the repository name, privacy and description', () => {
-        expect(repository.full_name).to.equal(`${githubUserName}/jasmine-awesome-report`);
-        expect(repository.private).to.equal(false);
-        expect(repository.description).to.equal('An awesome html report for Jasmine');
-      });
-    });
   });
 
   describe('test the repositories', () => {
@@ -113,24 +90,6 @@ describe('Github API test', () => {
         expect(readme.path).to.equal(filename);
         expect(readme).to.containSubset({
           type: 'file'
-        });
-      });
-
-      describe('test the download of files in the repo', () => {
-        const expectedMD5 = '8a406064ca4738447ec522e639f828bf';
-        let file;
-
-        before(() => {
-          const query = agent.get(readme.download_url)
-            .auth('token', process.env.ACCESS_TOKEN)
-            .then((response) => {
-              file = response.text;
-            });
-          return query;
-        });
-
-        it('should download the README file', () => {
-          expect(md5(file)).to.equal(expectedMD5);
         });
       });
 
