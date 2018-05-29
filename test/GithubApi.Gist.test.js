@@ -16,7 +16,7 @@ function wait(method, time) {
 
 const urlBase = 'https://api.github.com';
 
-describe('Testing the Delete methods in the Github API', () => {
+describe.only('Testing the Delete methods in the Github API', () => {
   describe('When create a gist', () => {
     const createGist = {
       description: 'this is an example about promise',
@@ -27,7 +27,6 @@ describe('Testing the Delete methods in the Github API', () => {
         }
       }
     };
-
 
     let gist;
     let code;
@@ -49,6 +48,50 @@ describe('Testing the Delete methods in the Github API', () => {
       expect(gist.description).to.equal(createGist.description);
       expect(gist.public).to.equal(true);
       expect(gist).to.containSubset(createGist);
+    });
+
+    describe('Testing if the gist really exist', () => {
+      let gistQuery;
+
+      before(() => {
+        gistQuery = agent.get(gist.url)
+          .auth('token', process.env.ACCESS_TOKEN);
+      });
+
+      it('Should exist the gist created', () => {
+        gistQuery.then((response) => {
+          expect(response.status).to.equal(statusCode.OK);
+        });
+      });
+
+      describe('Deleting the gist', () => {
+        let deleteQuery;
+
+        before(() => {
+          deleteQuery = agent.del(gist.url)
+            .auth('token', process.env.ACCESS_TOKEN);
+        });
+
+        it('Should delete the gist created', () => {
+          deleteQuery.then((response) => {
+            expect(response.status).to.equal(statusCode.NO_CONTENT);
+          });
+        });
+
+        describe('Want to verify if the gist is really gone', () => {
+          let gistQueryDeleted;
+          before(() => {
+            gistQueryDeleted = agent.get(gist.url)
+              .auth('token', process.env.ACCESS_TOKEN);
+          });
+
+          it('Should exist the gist created', () => {
+            gistQueryDeleted.catch((response) => {
+              expect(response.status).to.equal(statusCode.NOT_FOUND);
+            });
+          });
+        });
+      });
     });
   });
 });
