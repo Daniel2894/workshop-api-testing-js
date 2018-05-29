@@ -44,7 +44,7 @@ describe('Testing the Delete methods in the Github API', () => {
       return newGistQuery;
     });
 
-    it.only('Should create the gist', () => {
+    it('Should create the gist', () => {
       expect(code).to.equal(statusCode.CREATED);
       expect(gist.description).to.equal(createGist.description);
       expect(gist.public).to.equal(true);
