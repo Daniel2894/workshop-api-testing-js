@@ -6,11 +6,13 @@ chai.use(require('chai-subset'));
 
 const { expect } = chai;
 
-const jsCode = `function wait(method, time) {
+const jsCode = `
+function wait(method, time) {
   return new Promise((resolve) => {
     setTimeout(resolve(method()), time);
   });
-}`;
+}
+`;
 
 const urlBase = 'https://api.github.com';
 
@@ -29,11 +31,12 @@ describe('Testing the Delete methods in the Github API', () => {
 
     let gist;
     let code;
+    let newGistQuery;
 
 
     before(() => {
-      const newGistQuery = agent.post(`${urlBase}/gists`, createGist)
-        .auth('token', process.env.ACCESS_TOKEN)
+      newGistQuery = agent.post(`${urlBase}/gists`, createGist)
+        .auth(process.env.GITHUB_USERNAME, process.env.GITHUB_PASSWORD)
         .then((response) => {
           code = response.status;
           gist = response.body;
