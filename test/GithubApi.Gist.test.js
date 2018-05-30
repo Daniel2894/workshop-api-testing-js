@@ -28,67 +28,61 @@ describe.only('Testing the Delete methods in the Github API', () => {
       }
     };
 
-    let gist;
-    let code;
-    let newGistQuery;
+    let responseCreateGist;
 
-
-    before(() => {
-      newGistQuery = agent.post(`${urlBase}/gists`, createGist)
+    before(() =>
+      agent.post(`${urlBase}/gists`, createGist)
         .auth('token', process.env.ACCESS_TOKEN)
         .then((response) => {
-          code = response.status;
-          gist = response.body;
-        });
-      return newGistQuery;
-    });
+          responseCreateGist = response;
+        }));
 
     it('Should create the gist', () => {
-      expect(code).to.equal(statusCode.CREATED);
-      expect(gist.description).to.equal(createGist.description);
-      expect(gist.public).to.equal(true);
-      expect(gist).to.containSubset(createGist);
+      expect(responseCreateGist.status).to.equal(statusCode.CREATED);
+      expect(responseCreateGist.body.description).to.equal(createGist.description);
+      expect(responseCreateGist.body.public).to.equal(true);
+      expect(responseCreateGist.body).to.containSubset(createGist);
     });
 
     describe('Testing if the gist really exist', () => {
-      let gistQuery;
+      let responseGetGist;
 
-      before(() => {
-        gistQuery = agent.get(gist.url)
-          .auth('token', process.env.ACCESS_TOKEN);
-      });
+      before(() =>
+        agent.get(responseCreateGist.body.url)
+          .auth('token', process.env.ACCESS_TOKEN)
+          .then((response) => {
+            responseGetGist = response;
+          }));
 
       it('Should exist the gist created', () => {
-        gistQuery.then((response) => {
-          expect(response.status).to.equal(statusCode.OK);
-        });
+        expect(responseGetGist.status).to.equal(statusCode.OK);
       });
 
       describe('Deleting the gist', () => {
-        let deleteQuery;
+        let responseDeleteGist;
 
-        before(() => {
-          deleteQuery = agent.del(gist.url)
-            .auth('token', process.env.ACCESS_TOKEN);
-        });
+        before(() =>
+          agent.del(responseCreateGist.body.url)
+            .auth('token', process.env.ACCESS_TOKEN)
+            .then((response) => {
+              responseDeleteGist = response;
+            }));
 
         it('Should delete the gist created', () => {
-          deleteQuery.then((response) => {
-            expect(response.status).to.equal(statusCode.NO_CONTENT);
-          });
+          expect(responseDeleteGist.status).to.equal(statusCode.NO_CONTENT);
         });
 
         describe('Want to verify if the gist is really gone', () => {
-          let gistQueryDeleted;
-          before(() => {
-            gistQueryDeleted = agent.get(gist.url)
-              .auth('token', process.env.ACCESS_TOKEN);
-          });
+          let responseGistDeleted;
+          before(() =>
+            agent.get(responseCreateGist.body.url)
+              .auth('token', process.env.ACCESS_TOKEN)
+              .catch((response) => {
+                responseGistDeleted = response;
+              }));
 
           it('Should exist the gist created', () => {
-            gistQueryDeleted.catch((response) => {
-              expect(response.status).to.equal(statusCode.NOT_FOUND);
-            });
+            expect(responseGistDeleted.status).to.equal(statusCode.NOT_FOUND);
           });
         });
       });
