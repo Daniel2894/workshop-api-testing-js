@@ -34,4 +34,36 @@ describe.only('For getting all users', () => {
   it('Should have 30 users by default', () => {
     expect(usersPagination).to.equal(30);
   });
+
+  describe('Getting only 10 users', () => {
+    let usersTenPagination;
+    before(() =>
+      agent
+        .get(`${urlBase}/users`)
+        .auth('token', process.env.ACCESS_TOKEN)
+        .query({ per_page: 10 })
+        .then((response) => {
+          usersTenPagination = response.body.length;
+        }));
+
+    it('Should get only 10 users', () => {
+      expect(usersTenPagination).to.equal(10);
+    });
+
+    describe('Getting 50 users', () => {
+      let usersFifthyPagination;
+      before(() =>
+        agent
+          .get(`${urlBase}/users`)
+          .auth('token', process.env.ACCESS_TOKEN)
+          .query({ per_page: 50 })
+          .then((response) => {
+            usersFifthyPagination = response.body.length;
+          }));
+
+      it('Should get 50 users', () => {
+        expect(usersFifthyPagination).to.equal(50);
+      });
+    });
+  });
 });
