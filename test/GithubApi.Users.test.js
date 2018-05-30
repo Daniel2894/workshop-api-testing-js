@@ -4,27 +4,23 @@ const { expect } = require('chai');
 
 const urlBase = 'https://api.github.com';
 
-describe.only('For getting all users', () => {
+describe('For getting all users', () => {
   let queryTime;
   let usersPagination;
 
-  before(() => {
+  before(() =>
     agent
-      .get(`${urlBase}/users`)
-      .auth('token', process.env.ACCESS_TOKEN)
-      .then((response) => {
-        usersPagination = response.body.length;
-      });
-
-    const usersQuery = agent
       .get(`${urlBase}/users`)
       .auth('token', process.env.ACCESS_TOKEN)
       .use(responseTime((request, time) => {
         queryTime = time;
-      })).then(() => 0);
-
-    return usersQuery;
-  });
+      }))
+      .then(() =>
+        agent.get(`${urlBase}/users`)
+          .auth('token', process.env.ACCESS_TOKEN)
+          .then((response) => {
+            usersPagination = response.body.length;
+          })));
 
 
   it('Should have a time response below to 5 sec', () => {
