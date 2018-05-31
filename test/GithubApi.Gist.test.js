@@ -16,7 +16,7 @@ function wait(method, time) {
 
 const urlBase = 'https://api.github.com';
 
-describe.only('Testing the Delete methods in the Github API', () => {
+describe('Testing the Delete methods in the Github API', () => {
   describe('When create a gist', () => {
     const createGist = {
       description: 'this is an example about promise',
