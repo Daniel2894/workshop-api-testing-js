@@ -38,7 +38,7 @@ const listPublicEventsSchema = {
               push_id: { type: 'number' },
               size: { type: 'number' },
               distinct_size: { type: 'number' },
-              ref: { type: 'string' },
+              ref: { type: ['null', 'string'] },
               head: { type: 'string' },
               before: { type: 'string' },
               commits: {
