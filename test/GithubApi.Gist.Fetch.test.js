@@ -20,7 +20,7 @@ const defaultHeaders = {
 
 const urlBase = 'https://api.github.com';
 
-describe.only('Testing the Delete methods in the Github API', () => {
+describe('Testing the Delete methods in the Github API', () => {
   describe('When create a gist with the isomorphic-fetch library', () => {
     const createGist = {
       description: 'this is an example about promise',
